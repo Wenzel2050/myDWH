@@ -1,0 +1,5 @@
+#!/bin/sh
+cd /git && \
+  /usr/bin/git pull origin ${GIT_SYNC_BRANCH} 2>&1 | \
+  grep -q "origin/${GIT_SYNC_BRANCH}" && \
+  run-parts /etc/after/pull
