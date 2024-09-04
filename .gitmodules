@@ -1,0 +1,9 @@
+[submodule "data/sources/dbt"]
+	path = data/sources/dbt
+	url = git@github.com:pfabrici/toda-dbt.git
+[submodule "data/sources/dags"]
+	path = data/sources/dags
+	url = git@github.com:pfabrici/toda-dags.git
+[submodule "data/sources/hop"]
+	path = data/sources/hop
+	url = git@github.com:pfabrici/toda-hop.git
