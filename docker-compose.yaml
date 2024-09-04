@@ -2,7 +2,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16
-    expose:
+    ports:
       - "5432:5432"
     env_file:
       - path: toda.env
@@ -171,10 +171,9 @@ services:
     command:
       - -c
       - |
-        chown -R "${AIRFLOW_UID:-50000}:0" /opt/sources /opt/airflow
+        mkdir -p /opt/airflow/logs /opt/airflow/plugins /opt/airflow/config
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow
         exec /entrypoint airflow version
-        sleep 6000
-    user: "${AIRFLOW_UID:-50000}:0"
+    user: "0:0"
     volumes:
-      - ./data/sources:/opt/sources
       - ./data/airflow:/opt/airflow
