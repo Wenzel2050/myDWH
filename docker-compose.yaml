@@ -1,12 +1,11 @@
 version: '3.8'
-# blablubb
 services:
   postgres:
     image: postgres:16
     expose:
-      - 5432
+      - "5432:5432"
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     volumes:
       - ./data/db_data:/var/lib/postgresql/data
@@ -34,7 +33,7 @@ services:
     image: apache/airflow:2.9.3
     command: webserver
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     ports:
       - "8080:8080"
@@ -55,16 +54,16 @@ services:
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./data/sources/dags:/opt/airflow/dags
-      - ./data/logs/airflow:/opt/airflow/logs
-      - ./data/config/airflow:/opt/airflow/config
-      - ./data/addons/airflow:/opt/airflow/plugins
+      - ./data/airflow/logs:/opt/airflow/logs
+      - ./data/airflow/config:/opt/airflow/config
+      - ./data/airflow/plugins:/opt/airflow/plugins
       - /var/run/docker.sock:/var/run/docker.sock
 
   airflow-scheduler:
     image: apache/airflow:2.9.3
     command: scheduler
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
@@ -83,16 +82,16 @@ services:
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./data/sources/dags:/opt/airflow/dags
-      - ./data/logs/airflow:/opt/airflow/logs
-      - ./data/config/airflow:/opt/airflow/config
-      - ./data/addons/airflow:/opt/airflow/plugins
+      - ./data/airflow/logs:/opt/airflow/logs
+      - ./data/airflow/config:/opt/airflow/config
+      - ./data/airflow/plugins:/opt/airflow/plugins
       - /var/run/docker.sock:/var/run/docker.sock
 
   airflow-worker:
     image: apache/airflow:2.9.3
     command: celery worker
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     environment:
       DUMB_INIT_SETSID: "0"
@@ -115,16 +114,16 @@ services:
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./data/sources/dags:/opt/airflow/dags
-      - ./data/logs/airflow:/opt/airflow/logs
-      - ./data/config/airflow:/opt/airflow/config
-      - ./data/addons/airflow:/opt/airflow/plugins
+      - ./data/airflow/logs:/opt/airflow/logs
+      - ./data/airflow/config:/opt/airflow/config
+      - ./data/airflow/plugins:/opt/airflow/plugins
       - /var/run/docker.sock:/var/run/docker.sock
 
   airflow-triggerer:
     image: apache/airflow:2.9.3
     command: triggerer
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     environment:
       DUMB_INIT_SETSID: "0"
@@ -147,9 +146,9 @@ services:
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./data/sources/dags:/opt/airflow/dags
-      - ./data/logs/airflow:/opt/airflow/logs
-      - ./data/config/airflow:/opt/airflow/config
-      - ./data/addons/airflow:/opt/airflow/plugins
+      - ./data/airflow/logs:/opt/airflow/logs
+      - ./data/airflow/config:/opt/airflow/config
+      - ./data/airflow/plugins:/opt/airflow/plugins
       - /var/run/docker.sock:/var/run/docker.sock
 
   git-sync:
@@ -167,17 +166,15 @@ services:
     image: apache/airflow:2.9.3
     entrypoint: /bin/bash
     env_file:
-      - path: dwh.env
+      - path: toda.env
         required: true
     command:
       - -c
       - |
-        mkdir -p /opt/sources/{dags,hop,dbt} /opt/addons/{airflow,hop,dbt} /opt/logs/{airflow,hop,dbt}
-        chown -R "${AIRFLOW_UID:-50000}:0" /opt/sources /opt/addons /opt/logs
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/sources /opt/airflow
         exec /entrypoint airflow version
         sleep 6000
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
       - ./data/sources:/opt/sources
-      - ./data/logs:/opt/logs
-      - ./data/addons:/opt/addons
+      - ./data/airflow:/opt/airflow
