@@ -1,7 +1,7 @@
 # this image gets published to GHCR for production use
 ARG py_version=3.12.4
 
-FROM python:$py_version-slim-bullseye as base
+FROM python:$py_version-slim-bullseye AS base
 
 RUN apt-get update \
   && apt-get dist-upgrade -y \
