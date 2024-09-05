@@ -1,0 +1,1 @@
+https://stackoverflow.com/questions/62499661/airflow-dockeroperator-fails-with-permission-denied-error/70312378#70312378
