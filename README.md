@@ -1,9 +1,15 @@
 
 
 # Docker Stack vorbereiten
+## Annahmen
+Der Stack kann in verschiedenen Umgebungen ausgeführt werden :
+* Standalone Linux
+* Windows mit Docker Desktop und WSL, Stack Sourcen im WSL Dateisystem
+* Windows mit Docker Desktop, Stack Sourcen im Windows Dateisystem
+
 ## Auschecken
 
-Git Einstellung zum Handling von Zeilenenden anpassen :
+Die Git Einstellung zum Handling von Zeilenenden muss angepasst sein. Sonst werden auf Windows Clients die Zeilenenden der Linux Scripte, die in den Docker Containern verwendet werden sollen CRLF Zeilenenden generiert, die dann dazu führen, dass die Skripte nicht laufen.
 ```
 git config --global core.autocrlf false
 ```
@@ -12,7 +18,7 @@ Das Repository verwendet submodules/subrepositories. Um diese beim Auschecken di
 ```
 git clone --recurse-submodules git@github.com:pfabrici/toda.git
 ```
-verwendet werden.
+anstelle eines "normalen" git clone verwendet werden.
 ## Images vorbereiten
 Vor dem ersten Start muessen zwei Images manuell gebaut werden. Kommandos jeweils ausgehend vom Projekthomeverzeichnis.
 
@@ -22,6 +28,7 @@ Vor dem ersten Start muessen zwei Images manuell gebaut werden. Kommandos jeweil
 ( cd docker/dbt && docker build --tag toda-dbt . )
 ```
 **Windows**
+Das kann z.B. in der Powershell ausgeführt werden.
 ```
 cd docker\dbt 
 docker build --tag toda-dbt . 
@@ -30,7 +37,10 @@ docker build --tag toda-gitsync .
 ``` 
 
 ## Prepare Network
+In Airflow wird der Docker Operator verwendet, um Apache Hop oder dbt auszuführen. D.h. dass diese als "Docker-in-Docker" ausgeführt werden. Damit die Hop und dbt Worker Container auch auf die Datenbank ( und evtl. andere Services ) im eigentlichen Stack zugreifen können, müssen alle im gleichen Netzwerksegment liegen.
+Also wird ein externes Docker Network angelegt, welches aus docker-compose und den Docker Operatorn referenziert wird.
 
+**Anlegen**
 ```
 docker network create -d bridge --subnet=172.18.0.0/16 toda-network
 ```
