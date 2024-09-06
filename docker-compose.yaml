@@ -1,11 +1,10 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:16
     ports:
       - "5432:5432"
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     volumes:
       - toda_db_data:/var/lib/postgresql/data
@@ -45,7 +44,7 @@ services:
     image: apache/airflow:2.9.3
     command: webserver
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     ports:
       - "8080:8080"
@@ -72,7 +71,7 @@ services:
     image: apache/airflow:2.9.3
     command: scheduler
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
@@ -97,7 +96,7 @@ services:
     image: apache/airflow:2.9.3
     command: celery worker
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     environment:
       DUMB_INIT_SETSID: "0"
@@ -126,7 +125,7 @@ services:
     image: apache/airflow:2.9.3
     command: triggerer
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     environment:
       DUMB_INIT_SETSID: "0"
@@ -166,7 +165,7 @@ services:
     image: apache/airflow:2.9.3
     entrypoint: /bin/bash
     env_file:
-      - path: toda.env
+      - path: data/env/toda.env
         required: true
     command:
       - -c
@@ -182,12 +181,6 @@ services:
         condition: service_healthy
     volumes:
       - toda_airflow:/opt/airflow
-
-  alp:
-    image: alpine
-    volumes:
-        - toda_sources_hop:/projects
-    command: sleep 10
 
 volumes:
   toda_sources_hop:
