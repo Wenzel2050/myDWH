@@ -1,4 +1,6 @@
 
+
+# Docker Stack vorbereiten
 ## Auschecken
 
 Git Einstellung zum Handling von Zeilenenden anpassen :
@@ -26,6 +28,12 @@ docker build --tag toda-dbt .
 cd ..\gitsync
 docker build --tag toda-gitsync . 
 ``` 
+
+## Prepare Network
+
+```
+docker network create -d bridge --subnet=172.18.0.0/16 toda-network
+```
 
 ## Prepare Volumes
 
@@ -89,3 +97,9 @@ Linux Variante :
 ```
 rm -rf data/db_data/* data/airflow/*
 ```
+
+# Apache Hop Client vorbereiten
+
+Download von [Apache Hop|https://hop.apache.org]
+
+GUI Starten. Projekt anlegen ( toda )

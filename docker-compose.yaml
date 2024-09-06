@@ -161,6 +161,10 @@ services:
     volumes:
       - /root/.ssh/id_rsa
 
+  netutils:
+    image: dersimn/netutils
+    command: sleep 1200 
+
   dwh-init:
     image: apache/airflow:2.9.3
     entrypoint: /bin/bash
@@ -192,4 +196,9 @@ volumes:
   toda_db_data:
     external: true
   toda_airflow:
+    external: true
+
+networks:
+  default:
+    name: toda-network
     external: true
