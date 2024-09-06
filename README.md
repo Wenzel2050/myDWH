@@ -2,13 +2,11 @@
 Vor dem ersten Start muessen zwei Images manuell gebaut werden :
 ### gitsync Image
 ```
-cd docker/gitsync
-docker build --tag toda-gitsync .
+( cd docker/gitsync && docker build --tag toda-gitsync . )
 ```
 ### dbt Image
 ```
-cd docker/dbt
-docker build --tag toda-dbt .
+( cd docker/dbt && docker build --tag toda-dbt . )
 ``` 
 
 ## Prepare Volumes
