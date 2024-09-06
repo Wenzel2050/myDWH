@@ -161,10 +161,6 @@ services:
     volumes:
       - /root/.ssh/id_rsa
 
-  netutils:
-    image: dersimn/netutils
-    command: sleep 1200 
-
   dwh-init:
     image: apache/airflow:2.9.3
     entrypoint: /bin/bash
