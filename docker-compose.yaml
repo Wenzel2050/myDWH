@@ -8,7 +8,7 @@ services:
       - path: toda.env
         required: true
     volumes:
-      - ./data/db_data:/var/lib/postgresql/data
+      - toda_db_data:/var/lib/postgresql/data
       - ./docker/postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
@@ -28,6 +28,18 @@ services:
       retries: 50
       start_period: 30s
     restart: always
+
+  airflow-socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.2.0
+    environment:
+      CONTAINERS: 1
+      IMAGES: 1
+      AUTH: 1
+      POST: 1
+    privileged: true
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   airflow-webserver:
     image: apache/airflow:2.9.3
@@ -53,11 +65,8 @@ services:
         condition: service_completed_successfully
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
-      - ./data/sources/dags:/opt/airflow/dags
-      - ./data/airflow/logs:/opt/airflow/logs
-      - ./data/airflow/config:/opt/airflow/config
-      - ./data/airflow/plugins:/opt/airflow/plugins
-      - /var/run/docker.sock:/var/run/docker.sock
+      - toda_sources_dags:/opt/airflow/dags
+      - toda_airflow:/opt/airflow
 
   airflow-scheduler:
     image: apache/airflow:2.9.3
@@ -81,11 +90,8 @@ services:
         condition: service_completed_successfully
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
-      - ./data/sources/dags:/opt/airflow/dags
-      - ./data/airflow/logs:/opt/airflow/logs
-      - ./data/airflow/config:/opt/airflow/config
-      - ./data/airflow/plugins:/opt/airflow/plugins
-      - /var/run/docker.sock:/var/run/docker.sock
+      - toda_sources_dags:/opt/airflow/dags
+      - toda_airflow:/opt/airflow
 
   airflow-worker:
     image: apache/airflow:2.9.3
@@ -113,11 +119,8 @@ services:
         condition: service_completed_successfully
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
-      - ./data/sources/dags:/opt/airflow/dags
-      - ./data/airflow/logs:/opt/airflow/logs
-      - ./data/airflow/config:/opt/airflow/config
-      - ./data/airflow/plugins:/opt/airflow/plugins
-      - /var/run/docker.sock:/var/run/docker.sock
+      - toda_sources_dags:/opt/airflow/dags
+      - toda_airflow:/opt/airflow
 
   airflow-triggerer:
     image: apache/airflow:2.9.3
@@ -145,11 +148,8 @@ services:
         condition: service_completed_successfully
     user: "${AIRFLOW_UID:-50000}:0"
     volumes:
-      - ./data/sources/dags:/opt/airflow/dags
-      - ./data/airflow/logs:/opt/airflow/logs
-      - ./data/airflow/config:/opt/airflow/config
-      - ./data/airflow/plugins:/opt/airflow/plugins
-      - /var/run/docker.sock:/var/run/docker.sock
+      - toda_sources_dags:/opt/airflow/dags
+      - toda_airflow:/opt/airflow
 
   git-sync:
     image: toda-gitsync
@@ -175,5 +175,28 @@ services:
         chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow
         exec /entrypoint airflow version
     user: "0:0"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
     volumes:
-      - ./data/airflow:/opt/airflow
+      - toda_airflow:/opt/airflow
+
+  alp:
+    image: alpine
+    volumes:
+        - toda_sources_hop:/projects
+    command: sleep 10
+
+volumes:
+  toda_sources_hop:
+    external: true
+  toda_sources_dags:
+    external: true
+  toda_sources_dbt:
+    external: true
+  toda_db_data:
+    external: true
+  toda_airflow:
+    external: true
