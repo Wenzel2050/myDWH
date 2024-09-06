@@ -1,4 +1,3 @@
-
 ## Images vorbereiten
 Vor dem ersten Start muessen zwei Images manuell gebaut werden :
 ### gitsync Image
@@ -46,11 +45,3 @@ Linux Variante :
 ```
 rm -rf data/db_data/* data/airflow/*
 ```
-
-
-
-
-
-
-
-
