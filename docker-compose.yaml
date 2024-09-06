@@ -161,7 +161,7 @@ services:
     volumes:
       - /root/.ssh/id_rsa
 
-  redash:
+  redash-init:
     image: redash/redash
     env_file:
       - path: data/env/toda.env
@@ -171,6 +171,15 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+    command: create_db
+
+  redash:
+    image: redash/redash
+    env_file:
+      - path: data/env/toda.env
+        required: true
+    depends_on:
+      - redash-init
     restart: always
     command: server
     ports:
@@ -184,10 +193,7 @@ services:
       - path: data/env/toda.env
         required: true
     depends_on:
-      redis:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - redash-init
     restart: always
     command: scheduler
     environment:
@@ -200,10 +206,7 @@ services:
       - path: data/env/toda.env
         required: true
     depends_on:
-      redis:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - redash-init
     restart: always
     command: worker
     environment:
@@ -216,10 +219,7 @@ services:
       - path: data/env/toda.env
         required: true
     depends_on:
-      redis:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
+      - redash-init
     restart: always
     command: worker
     environment:
