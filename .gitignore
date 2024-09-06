@@ -1,3 +1,5 @@
 data/db_data
 data/airflow/airflow.cfg
+data/airflow/logs
+data/sources/dags/__pycache__
 venv
