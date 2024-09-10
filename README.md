@@ -77,7 +77,7 @@ docker volume create --driver local --opt type=none --opt device=/home/peterf/wo
 ```
 **Windows**
 ```
-docker volume rm $(docker volume ls -q | grep toda )
+docker volume rm $(docker volume ls -q | grep toda ) -- geht unter Windows nicht - WL 10.9.2024
 docker volume create --driver local --opt type=none --opt device=c:\work\sources\toda\data\sources\hop --opt o=bind toda_sources_hop
 docker volume create --driver local --opt type=none --opt device=c:\work\sources\toda\data\sources\dbt --opt o=bind toda_sources_dbt
 docker volume create --driver local --opt type=none --opt device=c:\work\sources\toda\data\sources\dags --opt o=bind toda_sources_dags
